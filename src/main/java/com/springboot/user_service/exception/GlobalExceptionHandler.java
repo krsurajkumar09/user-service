@@ -4,6 +4,7 @@ package com.springboot.user_service.exception;
 import com.springboot.user_service.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -34,10 +35,15 @@ public class GlobalExceptionHandler {
 
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors()
-                .forEach(err ->
-                        errors.put(err.getField(), err.getDefaultMessage())
-                );
+//        ex.getBindingResult().getFieldErrors()
+//                .forEach(err ->
+//                        errors.put(err.getField(), err.getDefaultMessage())
+//                );
+        // Converting above lambda fn into simple for each loop
+        for (FieldError err : ex.getBindingResult().getFieldErrors()) {
+            errors.put(err.getField(), err.getDefaultMessage());
+        }
+
 
         return ResponseEntity.badRequest().body(errors);
     }
